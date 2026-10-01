@@ -1,0 +1,8 @@
+# Généré par build.py
+dist/
+.cache/
+__pycache__/
+*.pyc
+# Films tournés (fichiers trop lourds pour GitHub) et sources vidéo
+film/
+videos-source/
