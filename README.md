@@ -9,7 +9,7 @@ PYTHONIOENCODING=utf-8 python build.py      # → dist/ (64 pages, 77 redirectio
 ```
 
 Aperçu local : serveur « nemaudig » (port 8770) dans `Skill/.claude/launch.json`.
-Captures pleine page : `MSYS_NO_PATHCONV=1 python tools_capture.py /chemin/ 1440 900 4000 sortie.png`.
+Les outils de capture et de tournage (`tools_*.py`) restent en local et ne sont pas versionnés.
 
 ## Organisation
 
@@ -38,10 +38,7 @@ sur l'accueil seulement). Organes modélisés à partir des tracés SVG de `lib/
   côtes et colonne en filigrane, pédicule du foie (artère / veine / canal biliaire) aux étapes foie et pancréas,
   profondeur de champ (désactivée sous 700 px), grain + vignettage, poussières floues, caméra « à l'épaule »,
   bandes cinéma, pulsation lumineuse à chaque changement d'étape.
-- Prompts pour une vidéo d'ouverture générée par IA : `prompts-video/PROMPTS.md` (+ images de référence).
 - Sans WebGL : planche SVG d'origine. Animations réduites si l'utilisateur le demande.
-- Contrôle visuel : `tools_capture3d.py` (Edge + SwiftShader ; peu d'images calculées, les transitions
-  n'y sont pas toujours terminées — vérifier aussi dans un vrai navigateur).
 
 ## Nouvelle architecture
 

@@ -230,46 +230,6 @@
     calculer();
   }
 
-  /* Film « Le parcours digestif » : lecteur en surimpression, version verticale courte sur écran haut */
-  const film = $("[data-film]");
-  const ouvrirFilm = $("[data-film-ouvrir]");
-  if (film && ouvrirFilm && typeof film.showModal === "function") {
-    const v = $("[data-film-video]", film);
-    let version = null;
-    const charger = () => {
-      const haut = window.matchMedia("(max-aspect-ratio: 4/5)").matches;
-      const voulue = haut ? "haut" : "large";
-      if (voulue === version) return;
-      version = voulue;
-      const base = v.dataset[voulue];
-      v.poster = `${base}.jpg`;
-      v.replaceChildren(...["webm", "mp4"].map((ext) => Object.assign(document.createElement("source"), { src: `${base}.${ext}`, type: `video/${ext}` })));
-      v.load();
-      $$("[data-chapitres]", film).forEach((ol) => { ol.hidden = ol.dataset.chapitres !== voulue; });
-    };
-    ouvrirFilm.addEventListener("click", () => {
-      charger();
-      film.showModal();
-      v.play().catch(() => {});
-    });
-    const fermer = () => { v.pause(); if (film.open) film.close(); };
-    $("[data-film-fermer]", film).addEventListener("click", fermer);
-    film.addEventListener("click", (ev) => { if (ev.target === film) fermer(); });
-    film.addEventListener("close", () => { v.pause(); ouvrirFilm.focus(); });
-    $$("[data-chapitres] button", film).forEach((b) => b.addEventListener("click", () => {
-      v.currentTime = parseFloat(b.dataset.t);
-      v.play().catch(() => {});
-    }));
-    v.addEventListener("timeupdate", () => {
-      const t = v.currentTime;
-      $$("[data-chapitres]:not([hidden]) li", film).forEach((li, i, tous) => {
-        const debut = parseFloat($("button", li).dataset.t);
-        const suivant = tous[i + 1] ? parseFloat($("button", tous[i + 1]).dataset.t) : Infinity;
-        li.classList.toggle("is-actif", t >= debut && t < suivant);
-      });
-    });
-  }
-
   /* Reflet qui suit la souris sur les boutons */
   $$(".btn").forEach((b) => b.addEventListener("pointermove", (ev) => {
     const r = b.getBoundingClientRect();

@@ -733,31 +733,6 @@ a.canal:hover { background: rgba(255,255,255,.1); border-color: rgba(43,179,167,
 .mini-medecin__mono { overflow: hidden; }
 .mini-medecin__mono img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; }
 
-/* Film (lecteur en surimpression) */
-.no-js [data-film-ouvrir] { display: none; }
-.voyage__film-btn .ico { width: 1.3em; height: 1.3em; color: var(--lagon); }
-.film { width: min(1180px, calc(100% - 2 * var(--gouttiere))); max-height: calc(100svh - 32px); padding: 0; border: 1px solid rgba(255,255,255,.12); border-radius: var(--r-l); background: #07131C; color: #DCE7EC; box-shadow: 0 40px 120px -20px rgba(0,0,0,.7); overflow: auto; }
-.film::backdrop { background: rgba(3, 8, 12, .82); backdrop-filter: blur(6px); }
-.film[open] { animation: monte .5s var(--ease); }
-.film__inner { display: grid; gap: 18px; padding: clamp(16px, 2.4vw, 28px); }
-.film__tete { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
-.film__tete .surtitre { color: var(--lagon-vif); margin-bottom: 8px; }
-.film h3 { color: #fff; margin: 0; font-size: clamp(1.5rem, 1.2rem + 1vw, 2.1rem); }
-.film__fermer { width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.06); color: #fff; display: grid; place-items: center; cursor: pointer; flex: none; }
-.film__fermer:hover { background: rgba(43,179,167,.25); }
-.film__ecran { border-radius: var(--r-m); overflow: hidden; background: #000; }
-.film__ecran video { display: block; width: 100%; max-height: 70svh; background: #000; }
-.film__chap-titre { font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; color: var(--lagon-vif); margin-bottom: 8px; }
-.film__chapitres ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
-.film__chapitres li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px 8px 6px; border-radius: 12px; border: 1px solid rgba(255,255,255,.08); transition: background .3s, border-color .3s; }
-.film__chapitres li.is-actif { background: rgba(43,179,167,.14); border-color: rgba(43,179,167,.5); }
-.film__chapitres button { display: flex; gap: 10px; align-items: center; border: 0; background: none; color: #fff; font: 500 .92rem var(--t-texte); cursor: pointer; padding: 4px; text-align: left; }
-.film__chapitres button span { font-variant-numeric: tabular-nums; color: var(--lagon-vif); font-size: .8rem; }
-.film__chapitres a { font-size: .78rem; color: #A9BDC7; text-decoration: none; display: inline-flex; gap: 4px; align-items: center; white-space: nowrap; }
-.film__chapitres a:hover { color: #fff; }
-.film__chapitres a .ico { width: 1em; height: 1em; }
-.film .petit { color: #8FA3AD; }
-@media (max-aspect-ratio: 4/5) { .film__ecran video { max-height: 62svh; margin: 0 auto; width: auto; max-width: 100%; } }
 
 /* Logo du cabinet (fourni le 01/10/2026) — volontairement grand */
 .entete__inner { min-height: 104px; }

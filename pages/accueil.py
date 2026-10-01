@@ -1,13 +1,9 @@
 """Page d'accueil — la vitrine du projet."""
 
-from datetime import date
-from pathlib import Path
-
 import config
 from data.cabinet import ACTUALITES, ETABLISSEMENTS, PARCOURS, UZES
 from data.chirurgiens import CHIRURGIENS
 from data.pathologies import FAMILLES, PAR_SLUG as PATHOS, par_famille
-from data.film import calendrier, chapitres, etapes_film
 from data.voyage import ETAPES
 from lib.anatomie import donnees_3d, planche
 from lib.composants import bandeau_rdv, carte_medecin, faq, schema_faq, video
@@ -92,50 +88,6 @@ def confiance():
     return f'<section class="confiance" aria-label="Nos engagements en bref"><ul class="confiance__piste" style="list-style:none;margin:0">{items}{doublon}</ul></section>'
 
 
-VIDEO = Path(__file__).resolve().parent.parent / "src" / "video"
-
-
-def film_present():
-    return (VIDEO / "parcours-digestif.mp4").exists()
-
-
-def _mmss(s):
-    return f"{int(s) // 60:02d}:{int(s) % 60:02d}"
-
-
-def _liste_chapitres(court):
-    return "".join(f'''<li><button type="button" data-t="{t}"><span>{_mmss(t)}</span>{e(nom)}</button>
-<a href="{lien}" aria-label="Fiche : {e(nom)}">Voir la fiche {ICONES["fleche"]}</a></li>''' for t, nom, lien in chapitres(court))
-
-
-def lecteur_film():
-    """Lecteur en surimpression : film complet 16:9 sur ordinateur, version courte verticale sur mobile."""
-    duree = round(calendrier(len(etapes_film()), False)[1])
-    return f'''<dialog class="film" data-film aria-labelledby="film-titre">
-  <div class="film__inner">
-    <div class="film__tete"><div>{surtitre("Film · " + str(duree) + " s")}<h3 id="film-titre">Le parcours digestif</h3></div>
-      <button type="button" class="film__fermer" data-film-fermer aria-label="Fermer le film">{ICONES["croix"]}</button></div>
-    <div class="film__ecran"><video controls playsinline preload="none" data-film-video
-      data-large="/video/parcours-digestif" data-haut="/video/parcours-digestif-vertical"
-      poster="/video/parcours-digestif.jpg" aria-describedby="film-note"></video></div>
-    <div class="film__chapitres">
-      <p class="film__chap-titre">Chapitres</p>
-      <ol data-chapitres="large">{_liste_chapitres(False)}</ol>
-      <ol data-chapitres="haut" hidden>{_liste_chapitres(True)}</ol>
-    </div>
-    <p class="petit mb-0" id="film-note">Illustration animée réalisée à partir de la 3D du site, sans son — les titres sont incrustés. Elle ne remplace pas une consultation.</p>
-  </div>
-</dialog>'''
-
-
-def schema_film():
-    duree = round(calendrier(len(etapes_film()), False)[1])
-    return {"@context": "https://schema.org", "@type": "VideoObject", "name": "Le parcours digestif — Nemaudig",
-            "description": "Illustration animée en 3D de l'appareil digestif : œsophage, estomac, foie, pancréas, intestin, côlon, rectum et paroi abdominale, avec les pathologies prises en charge par les chirurgiens de Nemaudig à Nîmes.",
-            "thumbnailUrl": f"{config.SITE_URL}/video/parcours-digestif.jpg", "contentUrl": f"{config.SITE_URL}/video/parcours-digestif.mp4",
-            "uploadDate": date.today().isoformat(), "duration": f"PT{duree // 60}M{duree % 60}S", "inLanguage": "fr-FR"}
-
-
 def voyage():
     rail = "".join(f'<li><a href="#voyage-{x["cle"]}" data-rail="{i}"><span>{i:02d}</span>{e(x["nom"])}</a></li>'
                    for i, x in enumerate(ETAPES) if x["organes"])
@@ -146,8 +98,7 @@ def voyage():
         liens = "".join(f'<a class="pastille pastille--sombre" href="{u}">{e(l)} {ICONES["fleche"]}</a>' for l, u in x["liens"])
         if i == 0:
             tete = (f'{surtitre("Voyage en 3D")}<h2 id="voyage-titre">Au cœur <em>de l’appareil digestif.</em></h2>'
-                    f'<p>{e(x["texte"])}</p><p class="voyage__indice">{ICONES["fleche"]} Faites défiler pour suivre le trajet</p>'
-                    + (f'<p class="mt-6"><button type="button" class="btn btn--clair voyage__film-btn" data-film-ouvrir>{ICONES["lecture"]}<span>Regarder le film</span></button></p>' if film_present() else ""))
+                    f'<p>{e(x["texte"])}</p><p class="voyage__indice">{ICONES["fleche"]} Faites défiler pour suivre le trajet</p>')
         else:
             tete = (f'<p class="voyage__num">{i:02d} — {e(x["nom"])}</p><h3>{e(x["titre"])}</h3><p>{e(x["texte"])}</p>'
                     + (f'<ul class="voyage__faits">{faits}</ul>' if faits else ""))
@@ -160,7 +111,6 @@ def voyage():
     <nav class="voyage__rail" aria-label="Étapes du voyage"><ol>{rail}</ol></nav>
   </div>
   <div class="voyage__etapes">{"".join(etapes)}</div>
-  {lecteur_film() if film_present() else ""}
 </section>'''
 
 
@@ -360,4 +310,4 @@ def rendre(assets):
     corps = hero() + confiance() + voyage() + explorer() + equipe() + technologies() + parcours() + videos() + lieux() + actualites() + questions() + bandeau_rdv()
     corps += f'<script type="application/json" id="anatomie-donnees">{donnees_3d()}</script>'
     module = f'<script type="module" src="{assets["js3d"]}"></script>'
-    return {"/": page(assets, "/", TITRE, DESC, corps, schemas=[schema_faq(FAQ_ACCUEIL)] + ([schema_film()] if film_present() else []), classe="accueil", extra_tete=module)}
+    return {"/": page(assets, "/", TITRE, DESC, corps, schemas=[schema_faq(FAQ_ACCUEIL)], classe="accueil", extra_tete=module)}

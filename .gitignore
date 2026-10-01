@@ -6,3 +6,11 @@ __pycache__/
 # Films tournés (fichiers trop lourds pour GitHub) et sources vidéo
 film/
 videos-source/
+# Outils locaux (tournage, captures) et sources non utilisées par le site
+tools_film.py
+tools_film_web.py
+tools_capture.py
+tools_capture3d.py
+data/film.py
+prompts-video/
+photos/logo/
