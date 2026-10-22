@@ -317,7 +317,7 @@ body.menu-ouvert .entete { z-index: 80; }
 .hero__fond::after { content: ""; position: absolute; width: 700px; height: 700px; left: -300px; bottom: -340px; border-radius: 50%; background: radial-gradient(circle, var(--lilas) 0%, rgba(232,227,245,0) 65%); }
 .hero__grille { position: absolute; inset: 0; background-image: linear-gradient(var(--ligne) 1px, transparent 1px), linear-gradient(90deg, var(--ligne) 1px, transparent 1px); background-size: 56px 56px; mask-image: radial-gradient(ellipse at 70% 40%, #000 0%, transparent 65%); -webkit-mask-image: radial-gradient(ellipse at 70% 40%, #000 0%, transparent 65%); opacity: .55; }
 .hero__inner { display: grid; gap: 40px; align-items: center; }
-@media (min-width: 1000px) { .hero__inner { grid-template-columns: 1fr 1fr; gap: 16px; } }
+@media (min-width: 1000px) { .hero__inner { grid-template-columns: .92fr 1.08fr; gap: 8px; } }
 .hero h1 { margin-bottom: 24px; }
 .hero h1 .ligne { display: block; }
 .hero__chapo { font-size: clamp(1.1rem, 1rem + .5vw, 1.32rem); color: var(--encre-2); max-width: 36em; margin-bottom: 32px; }
@@ -327,7 +327,7 @@ body.menu-ouvert .entete { z-index: 80; }
 .preuve strong { font: 350 clamp(2rem, 1.6rem + 1.2vw, 2.6rem)/1 var(--t-titre); letter-spacing: -.015em; color: var(--encre); font-variant-numeric: lining-nums; }
 .preuve span { font-size: .88rem; color: var(--brume); max-width: 16ch; line-height: 1.35; }
 
-.hero__visuel { position: relative; max-width: 640px; width: 100%; margin-inline: auto; }
+.hero__visuel { position: relative; max-width: 720px; width: 100%; margin-inline: auto; }
 .hero__halo { position: absolute; inset: 6% 8%; border-radius: 50%; background: radial-gradient(circle at 50% 45%, rgba(43,179,167,.22), transparent 62%); filter: blur(10px); animation: respire 7s ease-in-out infinite; }
 .hero__anneaux { position: absolute; inset: 0; pointer-events: none; }
 .hero__anneaux circle { fill: none; stroke: var(--lagon-vif); stroke-opacity: .22; stroke-width: 1; stroke-dasharray: 2 6; transform-origin: 50% 50%; animation: tourne 60s linear infinite; }
@@ -744,3 +744,8 @@ a.canal:hover { background: rgba(255,255,255,.1); border-color: rgba(43,179,167,
 .pied__logo { width: 170px; height: auto; border-radius: 22px; margin-bottom: 18px; box-shadow: 0 20px 50px -20px rgba(0,0,0,.6); }
 @media (max-width: 720px) { .logo__image { width: 64px; } .entete__inner { min-height: 84px; } .entete.is-defile .logo__image { width: 52px; } .logo__texte small { display: none; } }
 @media (min-width: 980px) { .familles { grid-template-columns: 1fr; } }
+
+/* Schéma du premier écran agrandi : la scène 3D déborde de son cadre (le texte reste lisible à gauche). */
+.hero__visuel > .planche3d { inset: auto; left: -18%; top: -14%; width: 136%; height: 112%; }
+@media (max-width: 999px) { .hero__visuel > .planche3d { left: -8%; top: -4%; width: 116%; height: 108%; } }
+.hero__inner > div:first-child { position: relative; z-index: 2; }

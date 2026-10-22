@@ -15,6 +15,7 @@ import { RenderPass } from "./vendor/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "./vendor/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "./vendor/postprocessing/OutputPass.js";
 import { BokehPass } from "./vendor/postprocessing/BokehPass.js";
+import { fluxDigestif, orbites } from "./anatomie3d-effets.js";
 import { bosseler, organique, profilOesophage, profiler, ossature, passeFilm, poussieresCinema, vaisseaux } from "./anatomie3d-cinema.js";
 
 const reduit = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -252,7 +253,13 @@ function monter(zone, donnees) {
   const pivot = new THREE.Group();
   const base = socle();
   pivot.add(racine, base);
-  const etoiles = voyage ? poussieresCinema() : poussieres(150);
+  // Premier écran : flux lumineux le long du trajet digestif et anneaux holographiques.
+  const vitrine = !voyage && zone.classList.contains("hero__visuel");
+  const flux = vitrine ? fluxDigestif() : null;
+  const anneauxHolo = vitrine ? orbites() : null;
+  if (flux) racine.add(flux);
+  if (anneauxHolo) pivot.add(anneauxHolo);
+  const etoiles = voyage ? poussieresCinema() : poussieres(vitrine ? 280 : 150);
   scene.add(pivot, etoiles);
   const liste = Object.values(organes);
 
@@ -302,12 +309,12 @@ function monter(zone, donnees) {
   if (voyage) window.addEventListener("voyage:progression", (ev) => { progression = ev.detail.f; if (visible) boucle(); });
 
   function ajuster() {
-    largeur = zone.clientWidth; hauteur = zone.clientHeight;
+    largeur = canvas.clientWidth || zone.clientWidth; hauteur = canvas.clientHeight || zone.clientHeight;
     if (!largeur || !hauteur) return;
     renderer.setSize(largeur, hauteur, false);
     camera.aspect = largeur / hauteur;
     const demi = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-    const marge = voyage ? 1.0 : (zone.classList.contains("explorer__planche") ? 1.0 : 1.15);
+    const marge = voyage ? 1.0 : (zone.classList.contains("explorer__planche") ? 1.0 : 1.02);
     distPlein = Math.max(3.15 * marge / demi, 1.7 * marge / (demi * camera.aspect));
     if (voyage) {
       // Sur grand écran, le sujet est décalé à gauche pour laisser la place au texte.
@@ -478,7 +485,8 @@ function monter(zone, donnees) {
       u.decalage.lerp(cible, 0.09);
       groupe.position.copy(u.decalage);
 
-      const echelle = (reduit ? 1 : easeBack(apparition)) * (on ? 1.05 : 1);
+      const souffle = vitrine && !reduit ? 1 + 0.014 * Math.sin(t * 1.5 + u.rang * 0.9) : 1; // respiration légère
+      const echelle = (reduit ? 1 : easeBack(apparition)) * (on ? 1.05 : 1) * souffle;
       groupe.scale.lerp(new THREE.Vector3(echelle, echelle, echelle), apparition < 1 ? 1 : 0.15);
       for (const m of u.mats) {
         const pleine = m.isMeshPhysicalMaterial ? 1 : 0.55;
@@ -496,6 +504,8 @@ function monter(zone, donnees) {
       : 3.2 - ((t * 0.5) % 1) * 6.6;
     if (etoiles.material.uniforms) etoiles.material.uniforms.uTemps.value = t;
     base.rotation.y = t * 0.15;
+    if (flux && !reduit) flux.userData.animer(t, Math.max(0, 1 - ecart * 1.4) * Math.min(1, t / 2.5));
+    if (anneauxHolo && !reduit) { anneauxHolo.userData.animer(t); anneauxHolo.rotation.y = t * 0.08; }
     etoiles.rotation.y = t * 0.03;
     etoiles.position.y = Math.sin(t * 0.4) * 0.06;
 
