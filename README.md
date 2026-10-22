@@ -34,10 +34,10 @@ sur l'accueil seulement). Organes modélisés à partir des tracés SVG de `lib/
   s'illumine et porte son nom ; lumière qui suit le curseur ; rotation au glisser ; clic → fiche.
 - Section « Voyage au cœur de l'appareil digestif » (`data/voyage.py`) : caméra pilotée par le défilement,
   9 étapes, halo lumineux (bloom). Textes = uniquement des faits du site actuel.
-  Rendu « cinéma » (`assets/js/anatomie3d-cinema.js`) : bosselures du côlon, surface organique,
-  côtes et colonne en filigrane, pédicule du foie (artère / veine / canal biliaire) aux étapes foie et pancréas,
-  profondeur de champ (désactivée sous 700 px), grain + vignettage, poussières floues, caméra « à l'épaule »,
-  bandes cinéma, pulsation lumineuse à chaque changement d'étape.
+  Rendu (`assets/js/anatomie3d-cinema.js`) : bosselures du côlon, surface organique, côtes et colonne en
+  filigrane, pédicule du foie aux étapes foie et pancréas, halo constant, bords lissés (MSAA).
+  Image volontairement stable (à sa demande, 22/10/2026) : ni grain, ni flou de profondeur, ni caméra
+  « à l'épaule », ni balayage, ni flash ; poussières petites et en retrait.
 - Sans WebGL : planche SVG d'origine. Animations réduites si l'utilisateur le demande.
 
 ## Nouvelle architecture

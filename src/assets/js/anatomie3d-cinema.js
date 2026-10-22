@@ -131,12 +131,12 @@ export function vaisseaux() {
 }
 
 /* Poussières lumineuses avec flou de profondeur (les plus proches deviennent de larges disques doux). */
-export function poussieresCinema(n = 340) {
+export function poussieresCinema(n = 160) {
   const pos = new Float32Array(n * 3), taille = new Float32Array(n), phase = new Float32Array(n);
   for (let i = 0; i < n; i++) {
     pos[i * 3] = (Math.random() - 0.5) * 7;
     pos[i * 3 + 1] = (Math.random() - 0.5) * 7;
-    pos[i * 3 + 2] = (Math.random() - 0.5) * 6 + (Math.random() < 0.15 ? 3 : 0);
+    pos[i * 3 + 2] = (Math.random() - 0.5) * 5 - 0.8; // en retrait : jamais devant la caméra
     taille[i] = 0.5 + Math.random() * 1.5;
     phase[i] = Math.random() * 100;
   }
@@ -148,10 +148,10 @@ export function poussieresCinema(n = 340) {
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     uniforms: { uTemps: { value: 0 }, uEchelle: { value: window.devicePixelRatio || 1 } },
     vertexShader: `attribute float aTaille; attribute float aPhase; uniform float uTemps; uniform float uEchelle; varying float vA;
-      void main(){ vec3 p = position; p.y = mod(p.y + uTemps * .05 * aTaille + 3.5, 7.) - 3.5; p.x += sin(uTemps * .3 + aPhase) * .08;
+      void main(){ vec3 p = position; p.y = mod(p.y + uTemps * .015 * aTaille + 3.5, 7.) - 3.5;
         vec4 mv = modelViewMatrix * vec4(p, 1.); float d = -mv.z;
-        gl_PointSize = aTaille * uEchelle * (18. / d) * (1. + smoothstep(4., 1., d) * 6.);
-        vA = mix(.5, .12, smoothstep(4., 1., d)) * smoothstep(.2, 1.5, d); gl_Position = projectionMatrix * mv; }`,
+        gl_PointSize = min(aTaille * uEchelle * (9. / d), 4. * uEchelle); // petits points nets, sans gros disques flous
+        vA = .32 * smoothstep(2.5, 4., d); gl_Position = projectionMatrix * mv; }`,
     fragmentShader: `varying float vA; void main(){ float r = length(gl_PointCoord - .5); float a = smoothstep(.5, .1, r) * vA;
       gl_FragColor = vec4(mix(vec3(.55,.95,.9), vec3(1.), .3), a); }`,
   });

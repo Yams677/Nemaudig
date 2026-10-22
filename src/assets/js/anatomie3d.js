@@ -14,9 +14,8 @@ import { EffectComposer } from "./vendor/postprocessing/EffectComposer.js";
 import { RenderPass } from "./vendor/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "./vendor/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "./vendor/postprocessing/OutputPass.js";
-import { BokehPass } from "./vendor/postprocessing/BokehPass.js";
 import { fluxDigestif, orbites } from "./anatomie3d-effets.js";
-import { bosseler, organique, profilOesophage, profiler, ossature, passeFilm, poussieresCinema, vaisseaux } from "./anatomie3d-cinema.js";
+import { bosseler, organique, profilOesophage, profiler, ossature, poussieresCinema, vaisseaux } from "./anatomie3d-cinema.js";
 
 const reduit = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 /* Mode tournage (outil tools_film.py) : l'horloge et la progression sont pilotées de l'extérieur,
@@ -263,24 +262,14 @@ function monter(zone, donnees) {
   scene.add(pivot, etoiles);
   const liste = Object.values(organes);
 
-  let composer = null, bloom = null, bokeh = null, film = null, impulsion = 0, etapeVue = -1;
+  let composer = null, bloom = null;
   if (voyage && !(FILM && FILM.sansPost)) {
-    composer = new EffectComposer(renderer);
+    // Rendu intermédiaire multi-échantillonné : bords lisses malgré le halo (sinon effet d'escalier).
+    composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { samples: 4, type: THREE.HalfFloatType }));
     composer.addPass(new RenderPass(scene, camera));
-    if (window.innerWidth > 700 && !(FILM && FILM.sansFlou)) {
-      bokeh = new BokehPass(scene, camera, { focus: 6, aperture: 0.004, maxblur: 0.009 });
-      // La profondeur se calcule sans le verre, les os ni les poussières : le point se fait sur les organes.
-      const rendre = bokeh.render.bind(bokeh);
-      const masques = () => [corps, etoiles, base, ...racine.children.filter((o) => o !== corps && !o.userData.cle)];
-      bokeh.render = (...args) => { const m = masques(); m.forEach((o) => { o.userData.vis = o.visible; o.visible = false; });
-        rendre(...args); m.forEach((o) => { o.visible = o.userData.vis; }); };
-      composer.addPass(bokeh);
-    }
     bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.32, 0.4, 0.9);
     composer.addPass(bloom);
     composer.addPass(new OutputPass());
-    film = passeFilm();
-    composer.addPass(film);
   }
 
   const legende = zone.querySelector("[data-legende]");
@@ -395,16 +384,11 @@ function monter(zone, donnees) {
       return { pos: e.cible.clone().add(new THREE.Vector3(...e.cam).multiplyScalar(recul)), cible: e.cible.clone() };
     };
     const a = pose(etapes[i]), b = pose(etapes[i + 1] || etapes[i]);
-    const orbite = reduit ? 0 : Math.sin(t * 0.25) * 0.25;
-    camPos.lerp(a.pos.lerp(b.pos, k).add(new THREE.Vector3(orbite, 0, 0)), 0.06);
+    camPos.lerp(a.pos.lerp(b.pos, k), 0.06);
     camCible.lerp(a.cible.lerp(b.cible, k), 0.06);
-    // Caméra « à l'épaule » : micro-dérive et respiration de focale, comme un travelling filmé.
-    const main = reduit ? 0 : 1;
-    camera.position.copy(camPos).add(new THREE.Vector3(Math.sin(t * 0.7) * 0.025, Math.sin(t * 0.9 + 1) * 0.02, 0).multiplyScalar(main));
-    camera.up.set(Math.sin(t * 0.33) * 0.012 * main, 1, 0);
+    // Caméra stable : elle ne bouge que pour aller d'une étape à l'autre.
+    camera.position.copy(camPos);
     camera.lookAt(camCible);
-    camera.fov = 30 + Math.sin(t * 0.21) * 0.8 * main;
-    camera.updateProjectionMatrix();
     const n2 = Math.round(f);
     const courante = etapes[n2];
     return { allumes: courante.cles, ecarter: courante.ecarter, cible: courante.cible, plein: !courante.cles.length, n: n2 };
@@ -420,15 +404,11 @@ function monter(zone, donnees) {
     if (voyage) {
       const st = etatVoyage(t);
       allumes = st.allumes; ecarter = st.ecarter; focus = st.cible;
-      if (st.n !== etapeVue) { if (etapeVue >= 0) impulsion = 1; etapeVue = st.n; }
-      impulsion *= 0.95;
-      if (bloom) bloom.strength = 0.24 + impulsion * 0.5;
-      if (bokeh) bokeh.uniforms.focus.value = camera.position.distanceTo(camCible);
-      if (film) film.uniforms.uTemps.value = t;
+      if (bloom) bloom.strength = 0.24; // halo constant : pas de flash au changement d'étape
       const vx = corps.userData.vaisseaux;
       if (vx) {
         const voir = allumes.includes("foie") || allumes.includes("pancreas") ? 0.95 : 0;
-        vx.userData.mats.forEach((m) => { m.opacity += (voir - m.opacity) * 0.08; m.emissiveIntensity = 0.5 + Math.sin(t * 2.4) * 0.25; });
+        vx.userData.mats.forEach((m) => { m.opacity += (voir - m.opacity) * 0.08; m.emissiveIntensity = 0.5; });
         vx.visible = vx.userData.mats[0].opacity > 0.01;
       }
       pivot.rotation.y += ((st.plein && !reduit ? Math.sin(t * 0.2) * 0.5 : 0) - pivot.rotation.y) * 0.04;
@@ -494,14 +474,15 @@ function monter(zone, donnees) {
         m.opacity += (opac - m.opacity) * 0.12;
         if (m.isMeshPhysicalMaterial) m.emissiveIntensity += ((on ? (voyage ? 0.03 : 0.38) : 0) - m.emissiveIntensity) * 0.12;
         else m.emissiveIntensity += ((on ? 1.2 : 0.35) - m.emissiveIntensity) * 0.12;
-        m.depthWrite = m.opacity > 0.9;
+        // Un organe pleinement visible est rendu opaque : plus de clignotement dû à l'ordre d'affichage des transparents.
+        const opaque = m.opacity > 0.985;
+        if (m.transparent === opaque) { m.transparent = !opaque; m.needsUpdate = true; }
+        m.depthWrite = opaque;
       }
     }
 
     corps.material.uniforms.uOpacite.value = reduit ? 1 : Math.min(1, t / 1.2);
-    corps.material.uniforms.uScan.value = reduit ? 9 : (voyage && focus && allumes.length)
-      ? focus.y + Math.sin(t * 1.1) * 0.55
-      : 3.2 - ((t * 0.5) % 1) * 6.6;
+    corps.material.uniforms.uScan.value = reduit || voyage ? 9 : 3.2 - ((t * 0.5) % 1) * 6.6; // pas de balayage dans le voyage
     if (etoiles.material.uniforms) etoiles.material.uniforms.uTemps.value = t;
     base.rotation.y = t * 0.15;
     if (flux && !reduit) flux.userData.animer(t, Math.max(0, 1 - ecart * 1.4) * Math.min(1, t / 2.5));
