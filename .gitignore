@@ -1,0 +1,11 @@
+# Généré par build.py
+dist/
+.cache/
+__pycache__/
+*.pyc
+# Non utilisés par le site (archives, outils locaux, données de l'ancienne version)
+_archive/
+lib/
+data/obesite.py
+tools_capture.py
+ouvrir-le-site.bat
