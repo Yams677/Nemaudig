@@ -1,0 +1,14 @@
+/* ─── Impression : fiches pratiques lisibles sur papier ou en PDF ────────── */
+@media print {
+  .entete, .pied, .barre-mobile, .appel, .toast, .fil, .bandeau__lignes, .btn, .recherche, [data-imprimer], dialog, .explorateur__scene, .carte-osm, #videos { display: none !important; }
+  body, .plan--nuit, .plan--clair { background: #fff !important; color: #000 !important; --couleur: #000; --couleur-fort: #000; --couleur-2: #333; --accent: #0a6c7d; --trait: #bbb; }
+  .bandeau { padding: 0 0 16pt; }
+  .bandeau::after { content: "Nemaudig — chirurgie digestive et viscérale · 480 avenue Saint-André de Codols, 30900 Nîmes · 04 66 05 24 63"; display: block; margin-top: 8pt; font-size: 9pt; }
+  .titre-xl { font-size: 22pt; } .titre-l { font-size: 15pt; }
+  .bloc { padding-block: 14pt; }
+  .deux-colonnes, .trois-colonnes, .explorateur, .article, .rdv, .centres { display: block; }
+  details > * { display: block !important; }
+  a { text-decoration: none; }
+  .case input { border-color: #000; }
+  .apparait { opacity: 1 !important; transform: none !important; }
+}

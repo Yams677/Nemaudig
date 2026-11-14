@@ -1,0 +1,11 @@
+/* Teinte de fond de chaque image d'organe (relevée dans l'image). */
+:root {
+  --org-rectum: #cebee1;
+  --org-intestin: #e7c0bd;
+  --org-oesophage: #afd5e7;
+  --org-pancreas: #f4e9b2;
+  --org-colon: #c3e2ce;
+  --org-estomac: #d3c4d6;
+  --org-foie: #e8ccba;
+  --org-vesicule: #c3d0bc;
+}

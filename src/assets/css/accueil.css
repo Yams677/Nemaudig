@@ -1,0 +1,55 @@
+/* ─── Accueil : les chirurgiens d'abord, puis un organe à la fois ────────── */
+
+/* Ouverture : titre à gauche, cinq portraits en arches à droite */
+.ouverture { position: relative; overflow: clip; padding: calc(var(--entete) + clamp(40px, 6vw, 88px)) 0 clamp(56px, 7vw, 104px); }
+.ouverture::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(36% 46% at 96% 4%, var(--lilas), transparent 70%), radial-gradient(30% 40% at 0% 100%, var(--sauge), transparent 70%);
+  opacity: 0.7;
+}
+.ouverture__grille { position: relative; display: grid; grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); gap: clamp(28px, 5vw, 80px); align-items: center; }
+.ouverture__titre { font: 300 clamp(2.5rem, 5.4vw, 4.8rem)/1.02 var(--titre); letter-spacing: -0.028em; color: var(--encre); text-wrap: balance; margin-bottom: 24px; animation: monte 1.2s var(--doux) both; }
+.ouverture__titre em { font-style: normal; color: var(--cyan-encre); }
+.ouverture__texte .sur-titre { animation: monte 1s var(--doux) both; }
+.ouverture__texte .chapo { animation: monte 1.2s 0.15s var(--doux) both; }
+.ouverture__texte .actions { animation: monte 1.2s 0.3s var(--doux) both; }
+@keyframes monte { from { opacity: 0; transform: translateY(18px); } }
+
+.arches { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(8px, 1.1vw, 16px); align-items: end; padding-top: 36px; }
+.arches li { animation: arche 1.2s var(--doux) both; animation-delay: calc(var(--i, 0) * 90ms + 200ms); }
+.arches li:nth-child(1) { --i: 0; --fond: var(--peche); } .arches li:nth-child(2) { --i: 1; --fond: var(--sauge); }
+.arches li:nth-child(3) { --i: 2; --fond: var(--lilas); } .arches li:nth-child(4) { --i: 3; --fond: var(--ciel); }
+.arches li:nth-child(5) { --i: 4; --fond: var(--beurre); }
+.arches li:nth-child(odd) { margin-bottom: 36px; }
+@keyframes arche { from { opacity: 0; transform: translateY(40px); } }
+.arches a { display: block; position: relative; aspect-ratio: 1 / 2.15; border-radius: 999px 999px 20px 20px; overflow: hidden; background: var(--fond); transition: transform 0.6s var(--doux), box-shadow 0.6s var(--doux); }
+.arches img { position: absolute; left: 0; bottom: 0; width: 100%; height: 88%; object-fit: cover; object-position: 50% 10%; mix-blend-mode: multiply; transition: transform 1s var(--doux); }
+.arche__nom {
+  position: absolute; inset: auto 0 0 0; padding: 40px 10px 14px; text-align: center; color: #fff; font: 500 0.86rem/1.25 var(--titre);
+  background: linear-gradient(to top, rgba(47, 42, 68, 0.9), transparent); opacity: 0; transform: translateY(8px); transition: opacity 0.4s, transform 0.5s var(--doux);
+}
+.arches a:hover, .arches a:focus-visible { transform: translateY(-12px); box-shadow: 0 30px 50px -30px rgba(47, 42, 68, 0.55); }
+.arches a:hover img { transform: scale(1.04); }
+.arches a:hover .arche__nom, .arches a:focus-visible .arche__nom { opacity: 1; transform: none; }
+@media (hover: none) { .arche__nom { opacity: 1; transform: none; font-size: 0.7rem; padding: 28px 4px 10px; } }
+@media (max-width: 900px) {
+  .ouverture__grille { grid-template-columns: minmax(0, 1fr); }
+  .arches { padding-top: 12px; }
+  .arches li:nth-child(odd) { margin-bottom: 20px; }
+}
+
+/* Un organe à la fois */
+.vitrine .onglets { margin-bottom: clamp(24px, 3vw, 40px); }
+.vitrine .onglet { background: transparent; cursor: pointer; }
+.vitrine .onglet[aria-pressed="true"] { background: var(--encre); color: #fff; border-color: var(--encre); }
+.vitrine__scene { position: relative; }
+.vitrine__vue { display: none; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 5vw, 80px); align-items: center; }
+.vitrine__vue.est-choisie { display: grid; animation: organe 0.7s var(--doux); }
+.vitrine__image { position: relative; aspect-ratio: 1; border-radius: 28px; overflow: hidden; background: var(--teinte); max-width: 560px; width: 100%; justify-self: center; }
+.vitrine__image img { width: 100%; height: 100%; object-fit: cover; }
+.vitrine__texte { display: grid; gap: 16px; justify-items: start; }
+.vitrine__texte .repere { color: var(--cyan-encre); }
+@media (max-width: 820px) { .vitrine__vue { grid-template-columns: minmax(0, 1fr); } .vitrine .onglets { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(-1 * var(--gouttiere)); padding-inline: var(--gouttiere); scrollbar-width: none; } .vitrine .onglet { flex: none; } }
+
+/* Cadre repris par d'autres pages (coins fins) — inutilisé depuis l'abandon de la 3D, conservé vide */
+.verre { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(47, 42, 68, 0.12); border-radius: var(--rayon); }
