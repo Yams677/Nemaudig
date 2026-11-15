@@ -18,7 +18,7 @@ from pages import accueil, annexes, equipe, explorer, parcours, pratique, specia
 
 RACINE = Path(__file__).parent
 SRC, DIST, DOCS = RACINE / "src", RACINE / "dist", RACINE / "docs"
-CSS = ["socle.css", "organes.css", "composants.css", "accueil.css", "pages.css", "impression.css"]
+CSS = ["socle.css", "organes.css", "composants.css", "accueil.css", "animations.css", "pages.css", "impression.css"]
 
 
 def horodatage(s):

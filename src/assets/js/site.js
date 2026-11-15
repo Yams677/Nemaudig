@@ -100,3 +100,14 @@ $$("[data-lieu]").forEach((lieu) => {
   lieu.addEventListener("focusin", () => allumer(true));
   lieu.addEventListener("focusout", () => allumer(false));
 });
+
+/* Barre de progression de lecture */
+const lecture = $("[data-lecture-page]");
+if (lecture) {
+  const suivre = () => {
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    lecture.style.setProperty("--lu", total > 0 ? (window.scrollY / total).toFixed(4) : "0");
+  };
+  window.addEventListener("scroll", suivre, { passive: true });
+  suivre();
+}

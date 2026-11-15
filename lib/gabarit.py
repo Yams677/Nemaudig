@@ -120,6 +120,7 @@ def _entete(actif):
     liens = "".join(
         f'<li><a href="{u(a)}"{" aria-current=\"page\"" if actif.startswith(a) else ""}>{e(n)}</a></li>' for a, n in NAV)
     return f'''<a class="evitement" href="#contenu">Aller au contenu</a>
+<div class="lecture" data-lecture-page aria-hidden="true"></div>
 <header class="entete" data-entete>
   <a class="marque" href="{u("/")}" aria-label="Nemaudig — accueil">
     <span class="marque__nom">NEMAUDIG</span>

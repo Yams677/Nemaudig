@@ -1,0 +1,86 @@
+/* ─── Animations de l'accueil ────────────────────────────────────────────────
+   Toutes s'arrêtent avec « animations réduites » (règle générale de socle.css) ;
+   tout ce qui bouge en continu plus de cinq secondes a un bouton de pause. */
+
+/* Titre : les mots montent l'un après l'autre */
+.ouverture__titre { animation: none; }
+.mot { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.12em; margin-bottom: -0.12em; }
+.mot > span { display: inline-block; animation: mot 1.1s var(--doux) both; animation-delay: calc(var(--i) * 90ms + 150ms); }
+@keyframes mot { from { transform: translateY(110%) rotate(4deg); opacity: 0; } }
+
+/* Halos pastel qui dérivent lentement derrière l'ouverture */
+.ouverture::before { display: none; }
+.ouverture__halos { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.ouverture__halos span { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.75; animation: halo 22s ease-in-out infinite alternate; }
+.ouverture__halos span:nth-child(1) { width: 46vw; height: 46vw; right: -12vw; top: -18vw; background: var(--lilas); }
+.ouverture__halos span:nth-child(2) { width: 38vw; height: 38vw; left: -14vw; bottom: -20vw; background: var(--sauge); animation-duration: 27s; animation-delay: -6s; }
+.ouverture__halos span:nth-child(3) { width: 26vw; height: 26vw; left: 38%; top: 46%; background: var(--peche); opacity: 0.5; animation-duration: 31s; animation-delay: -12s; }
+@keyframes halo { to { transform: translate(6vw, 4vw) scale(1.18); } }
+
+/* Arches : elles flottent doucement et suivent un peu le pointeur */
+.arches { --px: 0; --py: 0; }
+.arches li { translate: calc(var(--px) * var(--force, 10) * 1px) calc(var(--py) * var(--force, 10) * 1px); transition: translate 0.9s var(--doux); }
+.arches li:nth-child(1) { --force: 14; } .arches li:nth-child(2) { --force: -8; } .arches li:nth-child(3) { --force: 18; }
+.arches li:nth-child(4) { --force: -12; } .arches li:nth-child(5) { --force: 10; }
+.arches a { animation: flotte 7s ease-in-out infinite alternate; animation-delay: calc(var(--i, 0) * -1.3s); }
+@keyframes flotte { from { translate: 0 0; } to { translate: 0 -10px; } }
+.arches:hover a, .arches:focus-within a { animation-play-state: paused; }
+
+/* Chiffres : le trait se trace, le nombre compte */
+.chiffres { position: relative; border-top-color: transparent; }
+.chiffres::before { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 1px; background: var(--couleur-fort); opacity: 0.25; transform: scaleX(0); transform-origin: left; transition: transform 1.6s var(--doux); }
+.chiffres.est-vu::before, html:not(.js) .chiffres::before { transform: scaleX(1); }
+
+/* Bandeau des pathologies qui défile */
+.defilant { position: relative; background: var(--prune); color: #fff; padding-block: 18px; overflow: hidden; }
+.defilant__piste { display: flex; width: max-content; animation: defile 60s linear infinite; }
+.defilant__piste ul { display: flex; flex: none; }
+.defilant__piste li { display: flex; align-items: center; }
+.defilant__piste li::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); margin-inline: clamp(18px, 2.4vw, 36px); }
+.defilant__piste a { font: 300 clamp(1.2rem, 2.2vw, 1.9rem)/1.2 var(--titre); color: #fff; text-decoration: none; white-space: nowrap; transition: color 0.25s; }
+.defilant__piste a:hover { color: var(--peche); }
+@keyframes defile { to { transform: translateX(-50%); } }
+.defilant:hover .defilant__piste, .defilant:focus-within .defilant__piste, .defilant.est-en-pause .defilant__piste { animation-play-state: paused; }
+.defilant__pause, .vitrine__pause { font-size: 0; width: 44px; height: 44px; border-radius: 50%; flex: none; position: relative; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.35); }
+.defilant__pause { position: absolute; right: 14px; top: 50%; translate: 0 -50%; background: var(--prune); color: #fff; }
+.defilant__pause::before, .vitrine__pause::before { content: ""; position: absolute; left: 16px; top: 15px; width: 10px; height: 12px; border-inline: 3px solid currentColor; }
+.defilant__pause[aria-pressed="true"]::before, .vitrine__pause[aria-pressed="true"]::before { left: 17px; top: 13px; width: 0; height: 0; border: 0; border-left: 11px solid currentColor; border-block: 8px solid transparent; }
+@media (prefers-reduced-motion: reduce) {
+  .defilant__piste { width: auto; }
+  .defilant__piste ul[aria-hidden] { display: none; }
+  .defilant__piste ul { flex-wrap: wrap; row-gap: 8px; padding-inline: var(--gouttiere); }
+  .defilant__pause, .vitrine__pause { display: none; }
+}
+
+/* Un organe à la fois : passage automatique, organe en lévitation */
+.vitrine__barre { display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; margin-bottom: clamp(24px, 3vw, 40px); }
+.vitrine .vitrine__barre .onglets { margin: 0; }
+.vitrine__pause { color: var(--encre); background: transparent; border-color: var(--trait); }
+.vitrine .onglet { position: relative; overflow: hidden; }
+.vitrine .onglet::after { content: ""; position: absolute; left: 0; bottom: 0; height: 3px; width: 100%; background: var(--cyan); transform: scaleX(0); transform-origin: left; }
+.vitrine.est-en-lecture .onglet[aria-pressed="true"]::after { animation: jauge var(--duree, 6s) linear forwards; }
+@keyframes jauge { to { transform: scaleX(1); } }
+.vitrine__vue.est-choisie .vitrine__image { animation: entree-image 0.9s var(--doux) both; }
+.vitrine__vue.est-choisie .vitrine__image img { animation: levitation 5.5s ease-in-out infinite alternate; }
+.vitrine__vue.est-choisie .vitrine__texte > * { animation: monte 0.8s var(--doux) both; }
+.vitrine__vue.est-choisie .vitrine__texte > :nth-child(2) { animation-delay: 0.08s; }
+.vitrine__vue.est-choisie .vitrine__texte > :nth-child(3) { animation-delay: 0.16s; }
+.vitrine__vue.est-choisie .vitrine__texte > :nth-child(4) { animation-delay: 0.24s; }
+@keyframes entree-image { from { opacity: 0; transform: scale(0.94) rotate(-2deg); border-radius: 50%; } }
+@keyframes levitation { from { transform: scale(1.04) translateY(6px); } to { transform: scale(1.08) translateY(-8px); } }
+.vitrine:hover .vitrine__image img { animation-play-state: paused; }
+
+/* Parcours : la ligne avance avec le défilement */
+.etapes[data-avance] { position: relative; }
+.etapes[data-avance]::after { content: ""; position: absolute; left: 0; top: -1px; height: 2px; width: 100%; background: var(--cyan-encre); transform: scaleX(var(--avance, 0)); transform-origin: left; }
+.etapes[data-avance] li::before { transition: transform 0.5s var(--doux), background 0.4s; background: #cfc9dc; }
+.etapes[data-avance] li.est-atteinte::before { background: var(--cyan-encre); transform: scale(1.5); }
+@media (max-width: 980px) { .etapes[data-avance]::after { width: 2px; height: 100%; left: -1px; top: 0; transform: scaleY(var(--avance, 0)); transform-origin: top; } }
+
+/* Barre de progression de lecture, sous l'en-tête (toutes les pages) */
+.lecture { position: fixed; left: 0; top: var(--entete); z-index: 49; height: 2px; width: 100%; background: var(--cyan); transform: scaleX(var(--lu, 0)); transform-origin: left; pointer-events: none; }
+/* Titre des pages intérieures : entrée en douceur */
+.bandeau .sur-titre, .bandeau .titre-xl, .bandeau .chapo { animation: bandeau 1s var(--doux) both; }
+.bandeau .titre-xl { animation-delay: 0.08s; }
+.bandeau .chapo { animation-delay: 0.18s; }
+@keyframes bandeau { from { opacity: 0; transform: translateY(20px); } }
